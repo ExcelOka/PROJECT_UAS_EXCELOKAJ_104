@@ -8,11 +8,21 @@ use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $food = Food::all(); // Ambil semua data food
-        $pakets = Paket::all();     // Ambil semua data paket
-        return view('home', compact('food', 'pakets'));
+        $search = $request->input('search');
+
+        if ($search) {
+            // Jika ada pencarian
+            $food = Food::where('nama', 'like', "%{$search}%")->get();
+            $pakets = Paket::where('nama', 'like', "%{$search}%")->get();
+        } else {
+            // Jika tidak ada pencarian, tampilkan semua
+            $food = Food::all();
+            $pakets = Paket::all();
+        }
+
+        return view('home', compact('food', 'pakets', 'search'));
     }
 
     public function showfoodDetail(Food $food)
